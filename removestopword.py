@@ -2,11 +2,10 @@ from nltk.tokenize import word_tokenize
 import string
 import json
 import re
+import sys
 import csv
 from nltk.tokenize import RegexpTokenizer
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
-
-FileResult="Tweets_PreProcessed_"+fileName+".txt"
 
 #untuk membuat stemmer
 factory = StemmerFactory()
@@ -15,11 +14,11 @@ stemmer = factory.create_stemmer()
 def main():
 	fileName = sys.argv[1]
 
-	with open(fileName+".json",'r') as f, open('key_norm.csv') as filecsv, open('StopWords_Eng-Ind.txt','r') as stp_file:
+	with open(fileName+".json",'r') as f, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileName+".txt",'w') as hasil_tweet:
 		json_str = f.read()
 		json_data = json.loads(json_str)
 
-		# ini mengubah karakter unik u' dalam delimiter nya
+		# ini mengubah karakter unik u' dalam delimiter nya dan mengambil value dari isi
 		utfjson = []
 		for js in json_data:
 			temp = dict()
@@ -57,11 +56,20 @@ def main():
 		
 		gabung=dict(zip(keys,results)) #menggabungkan dua array
 
-		for q in clean_regular: #proses pengecekan, apakah ada kata yang harus dinormalisasi
-			temp = q
-			for k,v in gabung.iteritems():
-				temp=temp.replace(k,v)
-			clean_norm.append(temp)
+		for q in clean_regular: 
+			temp = q.split()
+			# Ambil array Kata
+			for i,_ in enumerate(temp):
+				if temp[i] in gabung:
+					temp[i] = gabung[temp[i]]
+			temp2=' '.join(temp)
+			clean_norm.append(temp2)
+
+		# Proses stemming data
+		clean_stemmer = []
+		for csm in clean_norm:
+			clean = stemmer.stem(csm)
+			clean_stemmer.append(clean)
 
 		# Membersihkan Stopword
 		atp = [] #variabel menyimpan array dalam array
@@ -70,20 +78,20 @@ def main():
 		#mengubah stopword yang txt ke bentuk array
 		for line in stp_file:
 		    atp.append(line.strip().split('/n'))
+
 		stp=sum(atp,[])
 
-		for csw in clean_norm:
+		for csw in clean_stemmer:
 			temp=csw.split() #membuat tokenize
+			print temp
 			clean_pnc = filter(lambda x: x not in string.punctuation,temp)
+			print clean_pnc
 			clean_sw = filter(lambda x: x not in stp,clean_pnc)
+			print clean_sw
 			cc=' '.join(clean_sw) #menggabngkan tokenize
+			print cc
+			print '----------------'
 			clean_stopword.append(cc)
-
-		# Proses stemming data
-		clean_stemmer = []
-		for csm in clean_stopword:
-			clean = stemmer.stem(csm)
-			clean_stemmer.append(clean)
 
 		# untuk mengambbil sentimen aja
 		utfjson3 = [] 
@@ -93,6 +101,7 @@ def main():
 				if key.encode("utf-8") == "sentimen": 
 					temp[key.encode("utf-8")] = val.encode("utf-8")
 			utfjson3.append(temp)
+
 		b=[] #variabel untuk menyiman kumulan sentimen
 		for reg in utfjson3:
 			for k,v in reg.iteritems():
@@ -100,9 +109,21 @@ def main():
 				b.append(regular)
 
 		clean_tweet=[]
-		for i in range(len(clean_stemmer)):
-			c = (clean_stemmer[i],b[i])
+		for i in range(len(clean_stopword)):
+			c = (clean_stopword[i],b[i])
 			clean_tweet.append(c)
+
+		#menulis hasil tweet
+		hasil_tweet.write('[\n')
+		FNL= False
+		for i in clean_tweet:
+			if FNL == True:
+				hasil_tweet.write(',\n')
+			FNL = True
+			print>>hasil_tweet,i
+			
+		hasil_tweet.write(']')
+		hasil_tweet.close()
 
 if __name__ == '__main__':
 	main()

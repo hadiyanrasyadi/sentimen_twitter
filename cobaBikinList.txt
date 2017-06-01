@@ -1,0 +1,17 @@
+[
+('rt penasaran sama punya yang ingin jawab rt dengan tanya pilih ak', 'something')
+,
+('layan warga jakarta mulai dari lahir dengan bagai program', 'something')
+,
+('golong sumbu pendek lo fpi piara keluarga cendana bibib risiek ulama mesum bisa demo tidak mau kerja', 'something')
+,
+('rt pak ahok itu didzolimi saya yakin pak ahok bebas', 'something')
+,
+('prof edward omar sharif h ahli pidana turut pndpt ahli unsur pasal 156a kuhp', 'something')
+,
+('rt pak ahok itu didzolimi saya yakin pak ahok bebas', 'something')
+,
+('rt pak ahok djarot paling gaul badai yang bisa tata kota jakarta', 'something')
+,
+('rt penasaran sama punya yang ingin jawab rt dengan tanya pilih ak', 'something')
+]
