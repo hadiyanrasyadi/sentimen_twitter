@@ -11,16 +11,13 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import nltk
 import re
 
-		
-
-
-#untuk membuat stemmer
+untuk membuat stemmer
 factory = StemmerFactory()
 stemmer = factory.create_stemmer()
 
 def main():
-	fileLatih = 'data_latih'
-	fileUji = sys.argv[1]
+	fileLatih = 'train'
+	fileUji = 'test'
 	with open(fileLatih+".json",'r') as f, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileUji+"_hasil_praproses.txt",'w') as hasil_tweet, open(fileUji+".json",'r') as fOpen, open(fileUji+"_hasil_sentimen.txt",'w') as hasil_sentimen:
 
 
@@ -209,37 +206,6 @@ def main():
 			sentimen= classifier.classify(extract_features(i.split()))
 			hasil_sentimen.append(sentimen)
 
-		print ('Menghitung hasil sentimen')
-		positif=hasil_sentimen.count("positif")
-		negatif=hasil_sentimen.count("negatif")
-		netral=hasil_sentimen.count("netral")
-		total=positif+negatif+netral
-		presen_positif=(positif/total)*100
-		presen_negatif=(negatif/total)*100
-		presen_netral=(netral/total)*100
-		
-		print 'Presentase Positif: '
-		print positif
-		print '---'
-		print 'Presentase Negatif: '
-		print negatif
-		print '---'
-		print 'Presentase Netral: '
-		print netral
-		print '---'
-
-		"""
-		hasil_sentimen.write('Berikut hasil sentimen analisis dari akun.\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen positif : '+positif+'\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen negatif : '+negatif+'\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen netral : '+netral+'\n\n')
-
-		hasil_sentimen.write('Dalam bentuk presentase :\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen positif : '+presen_positif+'\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen negatif : '+presen_negatif+'\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen netral : '+presen_netral+'\n\n')
-		hasil_sentimen.close()
-		"""
 
 if __name__ == '__main__':
 	main()
