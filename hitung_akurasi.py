@@ -11,14 +11,14 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import nltk
 import re
 
-untuk membuat stemmer
+#untuk membuat stemmer
 factory = StemmerFactory()
 stemmer = factory.create_stemmer()
 
 def main():
 	fileLatih = 'train'
 	fileUji = 'test'
-	with open(fileLatih+".json",'r') as f, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileUji+"_hasil_praproses.txt",'w') as hasil_tweet, open(fileUji+".json",'r') as fOpen, open(fileUji+"_hasil_sentimen.txt",'w') as hasil_sentimen:
+	with open(fileLatih+".json",'r') as f, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileUji+"_tesakurasi_praproses.txt",'w') as hasil_tweet, open(fileUji+".json",'r') as fOpen, open(fileUji+"_testakurasi_hasil.txt",'w') as hasil_akurasi:
 
 
 		json_str = f.read()
@@ -184,28 +184,91 @@ def main():
 		########################################
 		## Membuka file yang akan di sentimen ##
 		########################################
-		utfjson_open=[]
+		utfjson2_open=[]
 		for jso in json_dataOpen:
 			temp = dict()
 			for key,val in jso.iteritems():
-				if key.encode("utf-8") == "isi": 
+				if key.encode("utf-8") == "sentimen": 
 					temp[key.encode("utf-8")] = val.encode("utf-8")
-			utfjson_open.append(temp)
+			utfjson2_open.append(temp)
 
 		# mengambil isi yang akan di sentimen
-		isi_open=[]
-		for rego in utfjson_open:
+		isi2_open=[]
+		for rego in utfjson2_open:
 			for k,v in rego.iteritems():
 				regularo =  v.lower()
-				isi_open.append(regularo)
+				isi2_open.append(regularo)
 
 		#melakukan sentimen
 		print('Melakukan sentimen')
 		hasil_sentimen=[]
-		for i in isi_open:
+		for i in isi2_open:
 			sentimen= classifier.classify(extract_features(i.split()))
 			hasil_sentimen.append(sentimen)
 
+		################## Hitung Akurasi ###########
+		positif = 0
+		positif_tp=0
+		positif_fn=0
+		negatif = 0
+		negatif_tp=0
+		negatif_fn=0
+		netral = 0
+		netral_tp=0
+		netral_fn=0
+
+		for i in range(len(isi2_open)):
+			if isi2_open[i] == "netral":
+				if isi2_open[i] == hasil_sentimen[i]:
+					netral_tp = netral_tp + 1
+					continue
+				else:
+					netral_fn = netral_fn + 1
+					continue
+			elif isi2_open[i] == "positif":
+				if isi2_open[i] == hasil_sentimen[i]:
+					positif_tp = positif_tp + 1
+					continue
+				else:
+					positif_fn = positif_fn + 1
+					continue
+			else:
+				if isi2_open[i] == hasil_sentimen[i]:
+					negatif_tp = negatif_tp + 1
+					continue
+				else:
+					negatif_fn = negatif_fn + 1
+					continue
+
+
+		for i in range(len(isi2_open)):
+			if isi2_open[i] == "netral":
+				netral = netral + 1
+				continue
+			elif isi2_open[i] == "positif":
+				positif = positif + 1
+				continue
+			else:
+				negatif = negatif + 1
+				continue
+
+		akurasi = (float(positif_tp+negatif_tp+netral_tp)) / (positif+negatif+netral) * 100
+		
+		hasil_akurasi.write('Berikut Hasil sentimen dengan akurasi : '+ str(akurasi) +' %\n')
+		hasil_akurasi.write ('positif : '+ str(positif) + '\n')
+		hasil_akurasi.write ('positif_tp : ' + str(positif_tp) + '\n')
+		hasil_akurasi.write ('positif_fn : ' + str(positif_fn) + '\n\n')
+
+		hasil_akurasi.write ('negatif : '+ str(negatif) + '\n')
+		hasil_akurasi.write ('negatif_tp : ' + str(negatif_tp) + '\n')
+		hasil_akurasi.write ('negatif_fn : ' + str(negatif_fn) + '\n\n')
+
+		hasil_akurasi.write ('netral : '+ str(netral) + '\n')
+		hasil_akurasi.write ('netral_tp : ' + str(netral_tp) + '\n')
+		hasil_akurasi.write ('netral_fn : ' + str(netral_fn) + '\n\n')
+
+		hasil_tweet.close()
+		hasil_akurasi.close()
 
 if __name__ == '__main__':
 	main()

@@ -204,19 +204,21 @@ def main():
 
 		#melakukan sentimen
 		print('Melakukan sentimen')
-		hasil_sentimen=[]
+		result_sentimen=[]
 		for i in isi_open:
 			sentimen= classifier.classify(extract_features(i.split()))
-			hasil_sentimen.append(sentimen)
+			result_sentimen.append(sentimen)
 
 		print ('Menghitung hasil sentimen')
-		positif=hasil_sentimen.count("positif")
-		negatif=hasil_sentimen.count("negatif")
-		netral=hasil_sentimen.count("netral")
+		positif=result_sentimen.count("positif")
+		negatif=result_sentimen.count("negatif")
+		netral=result_sentimen.count("netral")
+		
 		total=positif+negatif+netral
-		presen_positif=(positif/total)*100
-		presen_negatif=(negatif/total)*100
-		presen_netral=(netral/total)*100
+		
+		presen_positif=(float(positif)/total)*100
+		presen_negatif=(float(negatif)/total)*100
+		presen_netral=(float(netral)/total)*100
 		
 		print 'Presentase Positif: '
 		print positif
@@ -228,18 +230,19 @@ def main():
 		print netral
 		print '---'
 
-		"""
-		hasil_sentimen.write('Berikut hasil sentimen analisis dari akun.\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen positif : '+positif+'\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen negatif : '+negatif+'\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen netral : '+netral+'\n\n')
+		
+		hasil_sentimen.write('Berikut hasil sentimen analisis dari akun '+fileUji+ ' sebanyak ' + str(total) + 'data.\n')
+		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen positif : '+str(positif)+'\n')
+		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen negatif : '+str(negatif)+'\n')
+		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen netral : '+str(netral)+'\n\n')
 
 		hasil_sentimen.write('Dalam bentuk presentase :\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen positif : '+presen_positif+'\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen negatif : '+presen_negatif+'\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen netral : '+presen_netral+'\n\n')
+		hasil_sentimen.write('Persentase tweet dan retweet bersentimen positif : '+str(presen_positif)+'%\n')
+		hasil_sentimen.write('Persentase tweet dan retweet bersentimen negatif : '+str(presen_negatif)+'%\n')
+		hasil_sentimen.write('Persentase tweet dan retweet bersentimen netral : '+str(presen_netral)+'%\n\n')
 		hasil_sentimen.close()
-		"""
+		hasil_tweet.close()
+		
 
 if __name__ == '__main__':
 	main()
