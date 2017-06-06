@@ -16,11 +16,9 @@ factory = StemmerFactory()
 stemmer = factory.create_stemmer()
 
 def main():
-	fileLatih = 'train'
+	fileLatih = 'data_latih'
 	fileUji = 'test'
-	with open(fileLatih+".json",'r') as f, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileUji+"_tesakurasi_praproses.txt",'w') as hasil_tweet, open(fileUji+".json",'r') as fOpen, open(fileUji+"_testakurasi_hasil.txt",'w') as hasil_akurasi:
-
-
+	with open(fileLatih+".json",'r') as f, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileLatih+"_tesakurasi_praproses.txt",'w') as hasil_tweet, open(fileUji+".json",'r') as fOpen, open(fileUji+"_testakurasi_hasil.txt",'w') as hasil_akurasi:
 		json_str = f.read()
 		json_data = json.loads(json_str)
 
@@ -67,7 +65,13 @@ def main():
 		gabung=dict(zip(keys,results)) #menggabungkan dua array
 
 		print('Mulai normalisasi')
-		for q in clean_regular: 
+		clean_digit=[]
+		for s in clean_regular:
+			c_num = ''.join(i for i in s if not i.isdigit())
+			clean_digit.append(c_num)
+
+
+		for q in clean_digit: 
 			temp = q.split()
 			# Ambil array Kata
 			for i,_ in enumerate(temp):

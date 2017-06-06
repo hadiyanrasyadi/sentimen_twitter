@@ -11,15 +11,17 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import nltk
 import re
 
+		
+
+
 #untuk membuat stemmer
 factory = StemmerFactory()
 stemmer = factory.create_stemmer()
 
 def main():
-	fileLatih = 'train'
-	fileUji = 'test'
-	with open(fileLatih+".json",'r') as f, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileUji+"_tesakurasi_praproses.txt",'w') as hasil_tweet, open(fileUji+".json",'r') as fOpen, open(fileUji+"_testakurasi_hasil.txt",'w') as hasil_akurasi:
-
+	fileLatih = 'data_latih'
+	fileUji = sys.argv[1]
+	with open(fileLatih+".json",'r') as f, open(fileLatih+'_Hasil_normalisasi.txt','w') as hasil_norm, open(fileLatih+'_Hasil_stemming.txt','w') as hasil_stem, open(fileLatih+"_hasil_stopword.txt",'w') as hasil_stop, open(fileLatih+"_hasil_praproses.txt",'w') as hasil_tweet, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileUji+".json",'r') as fOpen, open(fileUji+"_hasil_sentimen.txt",'w') as hasil_sentimen:
 
 		json_str = f.read()
 		json_data = json.loads(json_str)
@@ -67,7 +69,13 @@ def main():
 		gabung=dict(zip(keys,results)) #menggabungkan dua array
 
 		print('Mulai normalisasi')
-		for q in clean_regular: 
+		clean_digit=[]
+		for s in clean_regular:
+			c_num = ''.join(i for i in s if not i.isdigit())
+			clean_digit.append(c_num)
+
+
+		for q in clean_digit: 
 			temp = q.split()
 			# Ambil array Kata
 			for i,_ in enumerate(temp):
@@ -76,12 +84,45 @@ def main():
 			temp2=' '.join(temp)
 			clean_norm.append(temp2)
 
+		##### Menulis hasil Normalisasi ########
+		print ('menulis hasil normalisasi')
+		#menulis hasil tweet
+		hasil_norm.write('[\n')
+		FNL= False
+		for i in clean_norm:
+			if FNL == True:
+				hasil_norm.write(',\n')
+			FNL = True
+			hasil_norm.write(str(i))
+
+		hasil_norm.write(']')
+
+		print('Donee menulis hasil normalisasi ^^')
+		#########################################
+
 		print('mulai stemming..')
 		# Proses stemming data
 		clean_stemmer = []
 		for csm in clean_norm:
 			clean = stemmer.stem(csm)
 			clean_stemmer.append(clean)
+
+		##### Menulis hasil Normalisasi ########
+		print ('menulis hasil Stemming')
+		#menulis hasil tweet
+		hasil_stem.write('[\n')
+		FNL= False
+		for i in clean_stemmer:
+			if FNL == True:
+				hasil_stem.write(',\n')
+			FNL = True
+			hasil_stem.write(str(i))
+
+		hasil_stem.write(']')
+
+		print('Donee menulis hasil Stemming ^^')
+		#########################################
+
 
 		# Membersihkan Stopword
 		atp = [] #variabel menyimpan array dalam array
@@ -99,6 +140,22 @@ def main():
 			clean_sw = filter(lambda x: x not in stp,clean_pnc)
 			cc=' '.join(clean_sw) #menggabngkan tokenize
 			clean_stopword.append(cc)
+
+		##### Menulis hasil Normalisasi ########
+		print ('menulis hasil stopword removal')
+		#menulis hasil tweet
+		hasil_stop.write('[\n')
+		FNL= False
+		for i in clean_stopword:
+			if FNL == True:
+				hasil_stop.write(',\n')
+			FNL = True
+			hasil_stop.write(str(i))
+
+		hasil_stop.write(']')
+
+		print('Donee menulis hasil stopword removal ^^')
+		#########################################
 
 		# untuk mengambbil sentimen aja
 		utfjson3 = [] 
@@ -120,7 +177,7 @@ def main():
 			c = (clean_stopword[i],b[i])
 			clean_tweet.append(c)
 
-		print ('menulis ke file '+fileUji)
+		print ('menulis ke file '+fileLatih)
 		#menulis hasil tweet
 		hasil_tweet.write('[\n')
 		FNL= False
@@ -184,112 +241,62 @@ def main():
 		########################################
 		## Membuka file yang akan di sentimen ##
 		########################################
-		utfjson2_open=[]
+		utfjson_open=[]
 		for jso in json_dataOpen:
 			temp = dict()
 			for key,val in jso.iteritems():
 				if key.encode("utf-8") == "isi": 
 					temp[key.encode("utf-8")] = val.encode("utf-8")
-			utfjson2_open.append(temp)
+			utfjson_open.append(temp)
 
 		# mengambil isi yang akan di sentimen
-		isi2_open=[]
-		for rego in utfjson2_open:
+		isi_open=[]
+		for rego in utfjson_open:
 			for k,v in rego.iteritems():
 				regularo =  v.lower()
-				isi2_open.append(regularo)
+				isi_open.append(regularo)
 
 		#melakukan sentimen
 		print('Melakukan sentimen')
-		hasil_sentimen=[]
-		for i in isi2_open:
+		result_sentimen=[]
+		for i in isi_open:
 			sentimen= classifier.classify(extract_features(i.split()))
-			hasil_sentimen.append(sentimen)
+			result_sentimen.append(sentimen)
 
-		########################################
-		## Ambil sentimen awal banget         ##
-		########################################
-		utfjson2_sentimen=[]
-		for jso in json_dataOpen:
-			temp = dict()
-			for key,val in jso.iteritems():
-				if key.encode("utf-8") == "sentimen": 
-					temp[key.encode("utf-8")] = val.encode("utf-8")
-			utfjson2_sentimen.append(temp)
-
-		# mengambil isi yang akan di sentimen
-		isi2_sentimen=[]
-		for rego in utfjson2_sentimen:
-			for k,v in rego.iteritems():
-				regularo =  v.lower()
-				isi2_sentimen.append(regularo)
-
-
-
-
-		################## Hitung Akurasi ###########
-		positif = 0
-		positif_tp=0
-		positif_fn=0
-		negatif = 0
-		negatif_tp=0
-		negatif_fn=0
-		netral = 0
-		netral_tp=0
-		netral_fn=0
-
-		for i in range(len(isi2_sentimen)):
-			if isi2_sentimen[i] == "netral":
-				if isi2_sentimen[i] == hasil_sentimen[i]:
-					netral_tp = netral_tp + 1
-					continue
-				else:
-					netral_fn = netral_fn + 1
-					continue
-			elif isi2_sentimen[i] == "positif":
-				if isi2_sentimen[i] == hasil_sentimen[i]:
-					positif_tp = positif_tp + 1
-					continue
-				else:
-					positif_fn = positif_fn + 1
-					continue
-			else:
-				if isi2_sentimen[i] == hasil_sentimen[i]:
-					negatif_tp = negatif_tp + 1
-					continue
-				else:
-					negatif_fn = negatif_fn + 1
-					continue
-
-
-		for i in range(len(isi2_sentimen)):
-			if isi2_sentimen[i] == "netral":
-				netral = netral + 1
-				continue
-			elif isi2_sentimen[i] == "positif":
-				positif = positif + 1
-				continue
-			else:
-				negatif = negatif + 1
-				continue
-
-		akurasi = (float(positif_tp+negatif_tp+netral_tp)) / (positif+negatif+netral) * 100
+		print ('Menghitung hasil sentimen')
+		positif=result_sentimen.count("positif")
+		negatif=result_sentimen.count("negatif")
+		netral=result_sentimen.count("netral")
 		
-		hasil_akurasi.write('Berikut Hasil sentimen dengan akurasi : '+ str(akurasi) +' %\n')
-		hasil_akurasi.write ('positif : '+ str(positif) + '\n')
-		hasil_akurasi.write ('positif_tp : ' + str(positif_tp) + '\n')
-		hasil_akurasi.write ('positif_fn : ' + str(positif_fn) + '\n\n')
+		total=positif+negatif+netral
+		
+		presen_positif=(float(positif)/total)*100
+		presen_negatif=(float(negatif)/total)*100
+		presen_netral=(float(netral)/total)*100
+		
+		print 'Presentase Positif: '
+		print positif
+		print '---'
+		print 'Presentase Negatif: '
+		print negatif
+		print '---'
+		print 'Presentase Netral: '
+		print netral
+		print '---'
 
-		hasil_akurasi.write ('negatif : '+ str(negatif) + '\n')
-		hasil_akurasi.write ('negatif_tp : ' + str(negatif_tp) + '\n')
-		hasil_akurasi.write ('negatif_fn : ' + str(negatif_fn) + '\n\n')
+		
+		hasil_sentimen.write('Berikut hasil sentimen analisis dari akun '+fileUji+ ' sebanyak ' + str(total) + 'data.\n')
+		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen positif : '+str(positif)+'\n')
+		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen negatif : '+str(negatif)+'\n')
+		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen netral : '+str(netral)+'\n\n')
 
-		hasil_akurasi.write ('netral : '+ str(netral) + '\n')
-		hasil_akurasi.write ('netral_tp : ' + str(netral_tp) + '\n')
-		hasil_akurasi.write ('netral_fn : ' + str(netral_fn) + '\n\n')
-
+		hasil_sentimen.write('Dalam bentuk presentase :\n')
+		hasil_sentimen.write('Persentase tweet dan retweet bersentimen positif : '+str(presen_positif)+'%\n')
+		hasil_sentimen.write('Persentase tweet dan retweet bersentimen negatif : '+str(presen_negatif)+'%\n')
+		hasil_sentimen.write('Persentase tweet dan retweet bersentimen netral : '+str(presen_netral)+'%\n\n')
+		hasil_sentimen.close()
 		hasil_tweet.close()
-		hasil_akurasi.close()
+		
 
 if __name__ == '__main__':
 	main()

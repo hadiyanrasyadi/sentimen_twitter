@@ -1,0 +1,13 @@
+Berikut Hasil sentimen dengan akurasi : 73.631840796 %
+positif : 55
+positif_tp : 51
+positif_fn : 4
+
+negatif : 58
+negatif_tp : 41
+negatif_fn : 17
+
+netral : 88
+netral_tp : 56
+netral_fn : 32
+
