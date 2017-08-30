@@ -1,0 +1,32 @@
+Berikut Hasil sentimen dengan akurasi : 73.631840796 %
+positif : 55
+positif_tp : 51
+positif_fn : 4
+positif_precision : 0.344594594595
+positif_recall : 0.927272727273
+
+negatif : 58
+negatif_tp : 41
+negatif_fn : 17
+negatif_precision : 0.277027027027
+negatif_recall : 0.706896551724
+
+netral : 88
+netral_tp : 56
+netral_fn : 32
+netral_precision : 0.378378378378
+netral_recall : 0.636363636364
+
+Hasil confusion matriks
+Aktual positif, prediksi positif : 51
+Aktual positif, prediksi negatif : 1
+Aktual positif, prediksi netral : 3
+
+Aktual negatif, prediksi negatif : 41
+Aktual negatif, prediksi positif : 17
+Aktual negatif, prediksi netral : 0
+
+Aktual netral, prediksi netral : 56
+Aktual netral, prediksi positif : 30
+Aktual netral, prediksi negatif : 2
+

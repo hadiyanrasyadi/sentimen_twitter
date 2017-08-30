@@ -2,6 +2,7 @@ import string
 import json
 import sys
 import csv
+import pickle
 
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
@@ -11,9 +12,6 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 import nltk
 import re
 
-		
-
-
 #untuk membuat stemmer
 factory = StemmerFactory()
 stemmer = factory.create_stemmer()
@@ -21,14 +19,7 @@ stemmer = factory.create_stemmer()
 def main():
 	fileLatih = 'data_latih'
 	fileUji = sys.argv[1]
-	with open(fileLatih+".json",'r') as f, 
-	open(fileLatih+'_Hasil_normalisasi.txt','w') as hasil_norm, 
-	open(fileLatih+'_Hasil_stemming.txt','w') as hasil_stem, 
-	open(fileLatih+"_hasil_stopword.txt",'w') as hasil_stop, 
-	open(fileLatih+"_hasil_praproses.txt",'w') as hasil_tweet,
-	 open('key_norm.csv') as filecsv, 
-	 open('stopword_list_TALA.txt','r') as stp_file, 
-	 open(fileUji+".json",'r') as fOpen, open(fileUji+"_hasil_sentimen.txt",'w') as hasil_sentimen:
+	with open(fileLatih+".json",'r') as f, open('Hasil Informative Feature.txt', 'w') as file, open(fileLatih+'_hasil_normalisasi.txt','w') as hasil_norm, open(fileLatih+'_hasil_stemming.txt','w') as hasil_stem, open(fileLatih+"_hasil_stopword.txt",'w') as hasil_stop, open(fileLatih+"_hasil_praproses.txt",'w') as hasil_tweet,open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileUji+".json",'r') as fOpen, open(fileUji+"_hasil_akurasi.txt",'w') as hasil_akurasi, open('my_classifier.pickle', 'wb') as model, open('clean_tweet.json', 'w') as decode:
 
 		json_str = f.read()
 		json_data = json.loads(json_str)
@@ -81,7 +72,6 @@ def main():
 			c_num = ''.join(i for i in s if not i.isdigit())
 			clean_digit.append(c_num)
 
-
 		for q in clean_digit: 
 			temp = q.split()
 			# Ambil array Kata
@@ -100,13 +90,14 @@ def main():
 			if FNL == True:
 				hasil_norm.write(',\n')
 			FNL = True
-			hasil_norm.write(str(i))
+			hasil_norm.write('"('+str(i)+')"')
 
 		hasil_norm.write(']')
 
 		print('Donee menulis hasil normalisasi ^^')
 		#########################################
 
+			
 		print('mulai stemming..')
 		# Proses stemming data
 		clean_stemmer = []
@@ -114,7 +105,7 @@ def main():
 			clean = stemmer.stem(csm)
 			clean_stemmer.append(clean)
 
-		##### Menulis hasil Normalisasi ########
+		##### Menulis hasil Stemming ########
 		print ('menulis hasil Stemming')
 		#menulis hasil tweet
 		hasil_stem.write('[\n')
@@ -123,13 +114,12 @@ def main():
 			if FNL == True:
 				hasil_stem.write(',\n')
 			FNL = True
-			hasil_stem.write(str(i))
+			hasil_stem.write('"('+str(i)+')"')
 
 		hasil_stem.write(']')
 
 		print('Donee menulis hasil Stemming ^^')
 		#########################################
-
 
 		# Membersihkan Stopword
 		atp = [] #variabel menyimpan array dalam array
@@ -157,12 +147,13 @@ def main():
 			if FNL == True:
 				hasil_stop.write(',\n')
 			FNL = True
-			hasil_stop.write(str(i))
+			hasil_stop.write('"('+str(i)+')"')
 
 		hasil_stop.write(']')
 
 		print('Donee menulis hasil stopword removal ^^')
 		#########################################
+
 
 		# untuk mengambbil sentimen aja
 		utfjson3 = [] 
@@ -184,126 +175,7 @@ def main():
 			c = (clean_stopword[i],b[i])
 			clean_tweet.append(c)
 
-		print ('menulis ke file '+fileLatih)
-		#menulis hasil tweet
-		hasil_tweet.write('[\n')
-		FNL= False
-		for i in clean_tweet:
-			if FNL == True:
-				hasil_tweet.write(',\n')
-			FNL = True
-			hasil_tweet.write(str(i))
-
-		hasil_tweet.write(']')
-
-		print('Donee ^^')
-
-		############ Membuat (tokenize word, sentimen) ###############
-		#untuk menyimpan array kata yang sudah di split 
-		print('Proses Sentimen')
-		tweets=[]
-		for word,sentimen in clean_tweet:
-		    words_filtered = [e.lower() for e in word.split()]
-		    tweets.append((words_filtered, sentimen))
-
-
-		def get_words_in_tweets(tweets):
-		    all_words = []
-		    for (words, sentiment) in tweets:
-		      all_words.extend(words)
-		    return all_words
-
-
-		def get_word_features(wordlist):	
-		    wordlist = nltk.FreqDist(wordlist)
-		    word_features = wordlist.keys()
-		    return word_features
-
-
-		word_features = get_word_features(get_words_in_tweets(tweets))
-
-
-		#untuk ekstraksi fitur
-		def extract_features(document):
-		    document_words = set(document)
-		    features = {}
-		    for word in word_features:
-		        features['contains(%s)' % word] = (word in document_words)
-		    return features
-
-
-		training_set = nltk.classify.apply_features(extract_features, tweets)
-
-
-		##########################  Membuat train klasifier  #################################
-		classifier = nltk.NaiveBayesClassifier.train(training_set)
-
-		def train(labeled_featuresets, estimator=ELEProbDist):
-		    # Create the P(label) distribution
-		    label_probdist = estimator(label_freqdist)
-		    # Create the P(fval|label, fname) distribution
-		    feature_probdist = {}
-		    return NaiveBayesClassifier(label_probdist, feature_probdist)
-
-		########################################
-		## Membuka file yang akan di sentimen ##
-		########################################
-		utfjson_open=[]
-		for jso in json_dataOpen:
-			temp = dict()
-			for key,val in jso.iteritems():
-				if key.encode("utf-8") == "isi": 
-					temp[key.encode("utf-8")] = val.encode("utf-8")
-			utfjson_open.append(temp)
-
-		# mengambil isi yang akan di sentimen
-		isi_open=[]
-		for rego in utfjson_open:
-			for k,v in rego.iteritems():
-				regularo =  v.lower()
-				isi_open.append(regularo)
-
-		#melakukan sentimen
-		print('Melakukan sentimen')
-		result_sentimen=[]
-		for i in isi_open:
-			sentimen= classifier.classify(extract_features(i.split()))
-			result_sentimen.append(sentimen)
-
-		print ('Menghitung hasil sentimen')
-		positif=result_sentimen.count("positif")
-		negatif=result_sentimen.count("negatif")
-		netral=result_sentimen.count("netral")
+		json.dump(clean_tweet,decode)
 		
-		total=positif+negatif+netral
-		
-		presen_positif=(float(positif)/total)*100
-		presen_negatif=(float(negatif)/total)*100
-		presen_netral=(float(netral)/total)*100
-		
-		print 'Presentase Positif: '
-		print positif
-		print '---'
-		print 'Presentase Negatif: '
-		print negatif
-		print '---'
-		print 'Presentase Netral: '
-		print netral
-		print '---'
-
-		
-		hasil_sentimen.write('Berikut hasil sentimen analisis dari akun '+fileUji+ ' sebanyak ' + str(total) + 'data.\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen positif : '+str(positif)+'\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen negatif : '+str(negatif)+'\n')
-		hasil_sentimen.write('Jumlah tweet dan retweet bersentimen netral : '+str(netral)+'\n\n')
-
-		hasil_sentimen.write('Dalam bentuk presentase :\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen positif : '+str(presen_positif)+'%\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen negatif : '+str(presen_negatif)+'%\n')
-		hasil_sentimen.write('Persentase tweet dan retweet bersentimen netral : '+str(presen_netral)+'%\n\n')
-		hasil_sentimen.close()
-		hasil_tweet.close()
-		
-
 if __name__ == '__main__':
 	main()

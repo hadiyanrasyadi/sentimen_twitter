@@ -1,0 +1,32 @@
+{
+"akurasi_sistem" : 73.631840796,
+"positif" : 55,
+"positif_tp" : 51,
+"positif_fn" : 4,
+"positif_sensitivity" : 0.927272727273,
+"positif_spesivisity" : 0.678082191781,
+
+"negatif" : 58,
+"negatif_tp" : 41,
+"negatif_fn" : 17,
+"negatif_sensitivity" : 0.706896551724,
+"negatif_spesivisity" : 0.979020979021,
+
+"netral" : 88,
+"netral_tp" : 56,
+"netral_fn" : 32,
+"netral_sensitivity" : 0.636363636364,
+"netral_spesivisity" : 0.973451327434,
+
+"Aktual positif, prediksi positif" : 51,
+"Aktual positif, prediksi negatif" : 1,
+"Aktual positif, prediksi netral" : 3,
+
+"Aktual negatif, prediksi negatif" : 41,
+"Aktual negatif, prediksi positif" : 17,
+"Aktual negatif, prediksi netral" : 0,
+
+"Aktual netral, prediksi netral" : 0,
+"Aktual netral, prediksi positif" : 17,
+"Aktual netral, prediksi negatif" : 41
+}

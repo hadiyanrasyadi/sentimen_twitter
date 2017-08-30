@@ -1,4 +1,4 @@
-Berikut hasil sentimen analisis dari akun latihdata_tugas sebanyak 10data.
+Berikut hasil sentimen analisis dari akun data_uji sebanyak 10data.
 Jumlah tweet dan retweet bersentimen positif : 5
 Jumlah tweet dan retweet bersentimen negatif : 3
 Jumlah tweet dan retweet bersentimen netral : 2

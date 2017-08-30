@@ -2,6 +2,7 @@ import string
 import json
 import sys
 import csv
+import pickle
 
 from nltk.tokenize import word_tokenize
 from nltk.tokenize import RegexpTokenizer
@@ -17,8 +18,9 @@ stemmer = factory.create_stemmer()
 
 def main():
 	fileLatih = 'data_latih'
-	fileUji = 'test'
-	with open(fileLatih+".json",'r') as f, open('Hasil Informative Feature', 'w') as file, open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileLatih+"_tesakurasi_praproses.txt",'w') as hasil_tweet, open(fileUji+".json",'r') as fOpen, open(fileUji+"_testakurasi_hasil.txt",'w') as hasil_akurasi:
+	fileUji = sys.argv[1]
+	with open(fileLatih+".json",'r') as f, open('Hasil Informative Feature.txt', 'w') as file, open(fileLatih+'_hasil_normalisasi.txt','w') as hasil_norm, open(fileLatih+'_hasil_stemming.txt','w') as hasil_stem, open(fileLatih+"_hasil_stopword.txt",'w') as hasil_stop, open(fileLatih+"_hasil_praproses.txt",'w') as hasil_tweet,open('key_norm.csv') as filecsv, open('stopword_list_TALA.txt','r') as stp_file, open(fileUji+".json",'r') as fOpen, open(fileUji+"_hasil_akurasi.txt",'w') as hasil_akurasi, open('my_classifier.pickle', 'wb') as model:
+
 		json_str = f.read()
 		json_data = json.loads(json_str)
 
@@ -70,7 +72,6 @@ def main():
 			c_num = ''.join(i for i in s if not i.isdigit())
 			clean_digit.append(c_num)
 
-
 		for q in clean_digit: 
 			temp = q.split()
 			# Ambil array Kata
@@ -80,12 +81,45 @@ def main():
 			temp2=' '.join(temp)
 			clean_norm.append(temp2)
 
+		##### Menulis hasil Normalisasi ########
+		print ('menulis hasil normalisasi')
+		#menulis hasil tweet
+		hasil_norm.write('[\n')
+		FNL= False
+		for i in clean_norm:
+			if FNL == True:
+				hasil_norm.write(',\n')
+			FNL = True
+			hasil_norm.write('"('+str(i)+')"')
+
+		hasil_norm.write(']')
+
+		print('Donee menulis hasil normalisasi ^^')
+		#########################################
+
+			
 		print('mulai stemming..')
 		# Proses stemming data
 		clean_stemmer = []
 		for csm in clean_norm:
 			clean = stemmer.stem(csm)
 			clean_stemmer.append(clean)
+
+		##### Menulis hasil Stemming ########
+		print ('menulis hasil Stemming')
+		#menulis hasil tweet
+		hasil_stem.write('[\n')
+		FNL= False
+		for i in clean_stemmer:
+			if FNL == True:
+				hasil_stem.write(',\n')
+			FNL = True
+			hasil_stem.write('"('+str(i)+')"')
+
+		hasil_stem.write(']')
+
+		print('Donee menulis hasil Stemming ^^')
+		#########################################
 
 		# Membersihkan Stopword
 		atp = [] #variabel menyimpan array dalam array
@@ -103,6 +137,23 @@ def main():
 			clean_sw = filter(lambda x: x not in stp,clean_pnc)
 			cc=' '.join(clean_sw) #menggabngkan tokenize
 			clean_stopword.append(cc)
+
+		##### Menulis hasil Normalisasi ########
+		print ('menulis hasil stopword removal')
+		#menulis hasil tweet
+		hasil_stop.write('[\n')
+		FNL= False
+		for i in clean_stopword:
+			if FNL == True:
+				hasil_stop.write(',\n')
+			FNL = True
+			hasil_stop.write('"('+str(i)+')"')
+
+		hasil_stop.write(']')
+
+		print('Donee menulis hasil stopword removal ^^')
+		#########################################
+
 
 		# untuk mengambbil sentimen aja
 		utfjson3 = [] 
@@ -132,7 +183,7 @@ def main():
 			if FNL == True:
 				hasil_tweet.write(',\n')
 			FNL = True
-			hasil_tweet.write(str(i))
+			hasil_tweet.write('"'+str(i)+'"')
 
 		hasil_tweet.write(']')
 
@@ -185,6 +236,7 @@ def main():
 		    feature_probdist = {}
 		    return NaiveBayesClassifier(label_probdist, feature_probdist)
 
+		pickle.dump(classifier, model)
 		########################################
 		## Membuka file yang akan di sentimen ##
 		########################################
@@ -276,6 +328,7 @@ def main():
 			if isi2_sentimen[i] == "netral":
 				if isi2_sentimen[i] == hasil_sentimen[i]:
 					netral_tp = netral_tp + 1
+					print(isi2_open[i])
 					continue
 				else:
 					netral_fn = netral_fn + 1
@@ -294,6 +347,48 @@ def main():
 				else:
 					negatif_fn = negatif_fn + 1
 					continue
+################################################################
+		pos_pos=0
+		pos_neg=0
+		pos_net=0
+
+		neg_neg=0
+		neg_pos=0
+		neg_net=0
+
+		net_net=0
+		net_pos=0
+		net_neg=0
+
+
+		for i in range(len(isi2_sentimen)):
+			if isi2_sentimen[i] == "netral":
+				if isi2_sentimen[i] == hasil_sentimen[i]:
+					net_net = net_net + 1
+					continue
+				elif hasil_sentimen[i] == "positif":
+					net_pos = net_pos + 1
+					continue
+				else:
+					net_neg = net_neg + 1
+			elif isi2_sentimen[i] == "positif":
+				if isi2_sentimen[i] == hasil_sentimen[i]:
+					pos_pos = pos_pos + 1
+					continue
+				elif hasil_sentimen[i] == "negatif":
+					pos_neg = pos_neg + 1
+					continue
+				else:
+					pos_net = pos_net + 1
+			else:
+				if isi2_sentimen[i] == hasil_sentimen[i]:
+					neg_neg = neg_neg + 1
+					continue
+				elif hasil_sentimen[i] == "positif":
+					neg_pos = neg_pos + 1
+					continue
+				else:
+					neg_net = neg_net + 1
 
 
 		for i in range(len(isi2_sentimen)):
@@ -308,40 +403,50 @@ def main():
 				continue
 
 		akurasi = (float(positif_tp+negatif_tp+netral_tp)) / (positif+negatif+netral) * 100
-		
-		#presisi 
-		positif_presisi=float(positif_tp)/(positif_tp+(negatif_tp+netral_tp))
-		negatif_presisi=float(negatif_tp)/(negatif_tp+(positif_tp+netral_tp))
-		netral_presisi=float(netral_tp)/(netral_tp+(negatif_tp+positif_tp))
+		#Sensitivity 
+		positif_sensitivity=float(positif_tp)/(positif_tp+positif_fn)
+		negatif_sensitivity=float(negatif_tp)/(negatif_tp+negatif_fn)
+		netral_sensitivity=float(netral_tp)/(netral_tp+netral_fn)
 
-		#recall
-		positif_recall=float(positif_tp)/(positif_tp+positif_fn)
-		negatif_recall=float(negatif_tp)/(negatif_tp+negatif_fn)
-		netral_recall=float(netral_tp)/(netral_tp+netral_fn)
+		#Spesitivity
+		positif_spesivisity=float(neg_neg+neg_net+net_neg+net_net)/(neg_neg+neg_net+net_neg+net_net+neg_pos+net_pos)
+		negatif_spesivisity=float(pos_pos+pos_net+net_pos+net_net)/(pos_pos+pos_net+net_pos+net_net+pos_neg+net_neg)
+		netral_spesivisity=float(pos_pos+pos_neg+neg_pos+neg_neg)/(pos_pos+pos_neg+neg_pos+neg_neg+pos_net+neg_net)
 
+		hasil_akurasi.write('{\n')
+		hasil_akurasi.write('"akurasi_sistem" : '+ str(akurasi) +',\n')
 
-		hasil_akurasi.write('Berikut Hasil sentimen dengan akurasi : '+ str(akurasi) +' %\n')
-
-		hasil_akurasi.write ('positif : '+ str(positif) + '\n')
-		hasil_akurasi.write ('positif_tp : ' + str(positif_tp) + '\n')
-		hasil_akurasi.write ('positif_fn : ' + str(positif_fn) + '\n')
-		hasil_akurasi.write ('positif_precision : ' + str(positif_presisi) + '\n')
-		hasil_akurasi.write ('positif_recall : ' + str(positif_recall) + '\n\n')
-		
-
-		hasil_akurasi.write ('negatif : '+ str(negatif) + '\n')
-		hasil_akurasi.write ('negatif_tp : ' + str(negatif_tp) + '\n')
-		hasil_akurasi.write ('negatif_fn : ' + str(negatif_fn) + '\n')
-		hasil_akurasi.write ('negatif_precision : ' + str(negatif_presisi) + '\n')
-		hasil_akurasi.write ('negatif_recall : ' + str(negatif_recall) + '\n\n')
+		hasil_akurasi.write ('"positif" : '+ str(positif) + ',\n')
+		hasil_akurasi.write ('"positif_tp" : ' + str(positif_tp) + ',\n')
+		hasil_akurasi.write ('"positif_fn" : ' + str(positif_fn) + ',\n')
+		hasil_akurasi.write ('"positif_sensitivity" : ' + str(positif_sensitivity) + ',\n')
+		hasil_akurasi.write ('"positif_spesivisity" : ' + str(positif_spesivisity) + ',\n\n')
 		
 
-		hasil_akurasi.write ('netral : '+ str(netral) + '\n')
-		hasil_akurasi.write ('netral_tp : ' + str(netral_tp) + '\n')
-		hasil_akurasi.write ('netral_fn : ' + str(netral_fn) + '\n')
-		hasil_akurasi.write ('netral_precision : ' + str(netral_presisi) + '\n')
-		hasil_akurasi.write ('netral_recall : ' + str(netral_recall) + '\n\n')
+		hasil_akurasi.write ('"negatif" : '+ str(negatif) + ',\n')
+		hasil_akurasi.write ('"negatif_tp" : ' + str(negatif_tp) + ',\n')
+		hasil_akurasi.write ('"negatif_fn" : ' + str(negatif_fn) + ',\n')
+		hasil_akurasi.write ('"negatif_sensitivity" : ' + str(negatif_sensitivity) + ',\n')
+		hasil_akurasi.write ('"negatif_spesivisity" : ' + str(negatif_spesivisity) + ',\n\n')
 		
+
+		hasil_akurasi.write ('"netral" : '+ str(netral) + ',\n')
+		hasil_akurasi.write ('"netral_tp" : ' + str(netral_tp) + ',\n')
+		hasil_akurasi.write ('"netral_fn" : ' + str(netral_fn) + ',\n')
+		hasil_akurasi.write ('"netral_sensitivity" : ' + str(netral_sensitivity) + ',\n')
+		hasil_akurasi.write ('"netral_spesivisity" : ' + str(netral_spesivisity) + ',\n\n')
+		
+		hasil_akurasi.write ('"Aktual positif, prediksi positif" : ' + str(pos_pos) + ',\n')
+		hasil_akurasi.write ('"Aktual positif, prediksi negatif" : ' + str(pos_neg) + ',\n')
+		hasil_akurasi.write ('"Aktual positif, prediksi netral" : ' + str(pos_net) + ',\n\n')
+		hasil_akurasi.write ('"Aktual negatif, prediksi negatif" : ' + str(neg_neg) + ',\n')
+		hasil_akurasi.write ('"Aktual negatif, prediksi positif" : ' + str(neg_pos) + ',\n')
+		hasil_akurasi.write ('"Aktual negatif, prediksi netral" : ' + str(neg_net) + ',\n\n')
+		hasil_akurasi.write ('"Aktual netral, prediksi netral" : ' + str(neg_net) + ',\n')
+		hasil_akurasi.write ('"Aktual netral, prediksi positif" : ' + str(neg_pos) + ',\n')
+		hasil_akurasi.write ('"Aktual netral, prediksi negatif" : ' + str(neg_neg) + '\n')
+		hasil_akurasi.write ('}')
+
 
 		hasil_tweet.close()
 		hasil_akurasi.close()

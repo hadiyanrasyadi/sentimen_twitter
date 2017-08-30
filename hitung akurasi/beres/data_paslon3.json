@@ -1,0 +1,80 @@
+{
+	"data_positif":[
+		{
+			"tanggal": "4 April",
+			"jumlah":1998 
+		},
+		{
+			"tanggal": "12 April",
+			"jumlah": 2831
+		},
+		{
+			"tanggal": "16 April",
+			"jumlah": 2297
+		},
+		{
+			"tanggal": "17 April",
+			"jumlah":2434 
+		},
+		{
+			"tanggal": "18 April",
+			"jumlah":2634 
+		},
+		{
+			"tanggal": "19 April",
+			"jumlah":2597 
+		}
+	],
+	"data_negatif":[
+		{
+			"tanggal": "4 April",
+			"jumlah":1941 
+		},
+		{
+			"tanggal": "12 April",
+			"jumlah": 916
+		},
+		{
+			"tanggal": "16 April",
+			"jumlah":1161
+		},
+		{
+			"tanggal": "17 April",
+			"jumlah":1196 
+		},
+		{
+			"tanggal": "18 April",
+			"jumlah":1118 
+		},
+		{
+			"tanggal": "19 April",
+			"jumlah":1206 
+		}
+	],
+	"data_netral":[
+		{
+			"tanggal": "4 April",
+			"jumlah":61 
+		},
+		{
+			"tanggal": "12 April",
+			"jumlah": 273
+		},
+		{
+			"tanggal": "16 April",
+			"jumlah":623 
+		},
+		{
+			"tanggal": "17 April",
+			"jumlah":455 
+		},
+		{
+			"tanggal": "18 April",
+			"jumlah":282 
+		},
+		{
+			"tanggal": "19 April",
+			"jumlah":288 
+		}
+	]
+}

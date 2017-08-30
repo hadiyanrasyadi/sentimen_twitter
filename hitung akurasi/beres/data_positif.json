@@ -1,0 +1,54 @@
+{
+	"paslon_2":[
+		{
+			"tanggal": "4 April",
+			"jumlah":2931 
+		},
+		{
+			"tanggal": "12 April",
+			"jumlah": 2691
+		},
+		{
+			"tanggal": "16 April",
+			"jumlah": 2302
+		},
+		{
+			"tanggal": "17 April",
+			"jumlah":2285 
+		},
+		{
+			"tanggal": "18 April",
+			"jumlah":2425 
+		},
+		{
+			"tanggal": "19 April",
+			"jumlah":2570 
+		}
+	],
+	"paslon_3":[
+		{
+			"tanggal": "4 April",
+			"jumlah":1998 
+		},
+		{
+			"tanggal": "12 April",
+			"jumlah": 2831
+		},
+		{
+			"tanggal": "16 April",
+			"jumlah": 2297
+		},
+		{
+			"tanggal": "17 April",
+			"jumlah":2434 
+		},
+		{
+			"tanggal": "18 April",
+			"jumlah":2634 
+		},
+		{
+			"tanggal": "19 April",
+			"jumlah":2597 
+		}
+	]
+}
