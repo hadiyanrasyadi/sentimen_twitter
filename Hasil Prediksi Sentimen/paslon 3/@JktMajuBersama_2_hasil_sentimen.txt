@@ -1,0 +1,10 @@
+Berikut hasil sentimen analisis dari akun @JktMajuBersama_2 sebanyak 4020data.
+Jumlah tweet dan retweet bersentimen positif : 2726
+Jumlah tweet dan retweet bersentimen negatif : 1124
+Jumlah tweet dan retweet bersentimen netral : 170
+
+Dalam bentuk presentase :
+Persentase tweet dan retweet bersentimen positif : 67.8109452736%
+Persentase tweet dan retweet bersentimen negatif : 27.960199005%
+Persentase tweet dan retweet bersentimen netral : 4.22885572139%
+

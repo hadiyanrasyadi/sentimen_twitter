@@ -1,0 +1,10 @@
+Berikut hasil sentimen analisis dari akun @AhokDjarot_8 sebanyak 4071data.
+Jumlah tweet dan retweet bersentimen positif : 3175
+Jumlah tweet dan retweet bersentimen negatif : 864
+Jumlah tweet dan retweet bersentimen netral : 32
+
+Dalam bentuk presentase :
+Persentase tweet dan retweet bersentimen positif : 77.9906656841%
+Persentase tweet dan retweet bersentimen negatif : 21.2232866618%
+Persentase tweet dan retweet bersentimen netral : 0.786047654139%
+
